@@ -1,15 +1,5 @@
+# Backend dependencies
 node_modules/
-dist/
-.env
-.env.*
-!.env.example
-
-# Dependencies
-node_modules/
-
-# Build folders
-dist/
-build/
 
 # Environment files
 .env
@@ -17,18 +7,17 @@ build/
 !.env.example
 
 # Logs
-logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
-# OS files
+# Local databases
+*.sqlite
+*.db
+
+# OS and editor files
 .DS_Store
 Thumbs.db
-
-# VS Code
 .vscode/
-
-# Coverage
-coverage/
+.idea/

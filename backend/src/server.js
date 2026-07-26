@@ -271,13 +271,27 @@ app.get('/api/properties/:id', (req, res) => {
   return res.json({ success: true, data: { property } });
 });
 
-app.get('/api/auth/me', (_req, res) => {
-  res.status(401).json({ success: false, message: 'Not authenticated' });
+app.get('/api/auth/me', (req, res) => {
+  const authHeader = req.headers.authorization || '';
+  if (!authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'Not authenticated' });
+  }
+
+  return res.json({
+    success: true,
+    data: {
+      user: { id: 1, name: 'Demo User', email: 'demo@example.com', role: 'seeker' },
+    },
+  });
 });
 
 app.post('/api/auth/login', (req, res) => {
-  const { email } = req.body || {};
-  res.json({
+  const { email, password } = req.body || {};
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email and password are required' });
+  }
+
+  return res.json({
     success: true,
     data: {
       user: { id: 1, name: 'Demo User', email: email || 'demo@example.com', role: 'seeker' },
@@ -288,13 +302,40 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 app.post('/api/auth/register', (req, res) => {
-  const { email } = req.body || {};
-  res.json({
+  const { email, name, role } = req.body || {};
+  return res.json({
     success: true,
     data: {
-      user: { id: 1, name: 'Demo User', email: email || 'demo@example.com', role: 'seeker' },
+      user: { id: 1, name: name || 'Demo User', email: email || 'demo@example.com', role: role || 'seeker' },
       accessToken: 'demo-access-token',
       refreshToken: 'demo-refresh-token',
+    },
+  });
+});
+
+app.post('/api/auth/google', (req, res) => {
+  const { email, name } = req.body || {};
+  return res.json({
+    success: true,
+    data: {
+      user: { id: 2, name: name || 'Google User', email: email || 'google.user@example.com', role: 'seeker' },
+      accessToken: 'demo-access-token',
+      refreshToken: 'demo-refresh-token',
+    },
+  });
+});
+
+app.post('/api/auth/refresh', (req, res) => {
+  const { refreshToken } = req.body || {};
+  if (!refreshToken) {
+    return res.status(400).json({ success: false, message: 'Refresh token is required' });
+  }
+
+  return res.json({
+    success: true,
+    data: {
+      accessToken: 'demo-access-token',
+      refreshToken: refreshToken || 'demo-refresh-token',
     },
   });
 });
